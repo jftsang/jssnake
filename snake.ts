@@ -5,6 +5,7 @@
   const STARTING_FOOD = 10;
   const N_WALLS = 5;
   const WALL_LENGTH = 50;
+  const WALL_TWISTINESS = 0.5;
   const WALL_GRACE = 4;
 
   function randomChoice<T>(array: T[]): T {
@@ -118,8 +119,11 @@
       for (let w = 0; w < N_WALLS; w++) {
         let i = Math.floor(Math.random() * n_rows)
         let j = Math.floor(Math.random() * n_cols);
+        let direction = randomDirection();
         for (let l = 0; l < WALL_LENGTH; l++) {
-          const direction = randomDirection();
+          if (Math.random() < WALL_TWISTINESS)
+            direction = randomDirection();
+
           [i, j] = this.cyclicAdd([i, j], direction);
 
           if (canBuildWall[i][j])
