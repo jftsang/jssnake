@@ -170,7 +170,11 @@
       const head = this.snake.head();
       const newHead = this.cyclicAdd(head, this.snake.direction);
 
-      if ((this.cells[newHead[0]][newHead[1]] === CellType.snake) || (this.cells[newHead[0]][newHead[1]] === CellType.wall)) {
+      if (
+        !this.alwaysGrow && (
+          (this.cells[newHead[0]][newHead[1]] === CellType.snake) || (this.cells[newHead[0]][newHead[1]] === CellType.wall)
+        )
+      ) {
         this.stop();
         alert("Game over!");
         return false;
