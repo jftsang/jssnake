@@ -3,18 +3,27 @@
   const FOOD_SPAWN_INTERVAL = 1000;
   const STARTING_LENGTH = 5;
 
-  const CellType = {
-    snake: "cell-snake",
-    food: "cell-food",
-    wall: "cell-wall",
-    empty: "cell-empty",
+  enum CellType {
+    snake = "cell-snake",
+    food = "cell-food",
+    wall = "cell-wall",
+    empty = "cell-empty",
   };
+
+  type Coordinate = [number, number];
 
   const Direction = {
-    up: [-1, 0], down: [1, 0], left: [0, -1], right: [0, 1],
+    up: <Coordinate>[-1, 0],
+    down: <Coordinate>[1, 0],
+    left: <Coordinate>[0, -1],
+    right: <Coordinate>[0, 1],
   };
 
+
   class Snake {
+    public cells: Coordinate[];
+    public direction: Coordinate;
+
     constructor(cells, direction) {
       this.cells = cells;
       this.direction = direction;
@@ -23,22 +32,23 @@
     head() {
       return this.cells[this.cells.length - 1];
     }
-
-    tail() {
-      return this.cells[0];
-    }
   }
 
   class SnakeGame {
-    constructor(div, n_rows, n_cols) {
-      this.div = div;
+    cells: CellType[][];
+    private advanceSnakeInterval: number;
+    private spawnFoodInterval: number;
+    private readonly grid: HTMLDivElement;
+    private alwaysGrow: boolean;
+    private snake: Snake;
 
-      this.n_rows = n_rows;
-      this.n_cols = n_cols;
-
+    constructor(public div: HTMLDivElement, public n_rows: number, public n_cols: number) {
       this.cells = new Array(n_rows);
       for (let i = 0; i < n_rows; i++) {
-        this.cells[i] = new Array(n_cols).fill(CellType.empty);
+        this.cells[i] = new Array(n_cols);
+        for (let j = 0; j < n_cols; j++) {
+          this.cells[i][j] = CellType.empty;
+        }
       }
 
       const startingPoint = [Math.floor(Math.random() * n_rows), Math.floor(Math.random() * n_cols)];
@@ -48,19 +58,22 @@
         this.cells[cell[0]][cell[1]] = CellType.snake;
       }
 
-      this.table = document.createElement("table");
+      this.grid = <HTMLDivElement>document.createElement("div");
       for (let i = 0; i < n_rows; i++) {
-        const row = document.createElement("tr");
+        const row = <HTMLDivElement>document.createElement("div");
+        row.classList.add("row");
+        this.grid.appendChild(row);
+
         for (let j = 0; j < n_cols; j++) {
-          const cell = document.createElement("td");
+          const cell = <HTMLDivElement>document.createElement("div");
+          row.appendChild(cell);
           cell.classList.add("cell");
           row.appendChild(cell);
-
         }
-        this.table.appendChild(row);
+        this.grid.appendChild(row);
       }
 
-      this.div.appendChild(this.table);
+      this.div.appendChild(this.grid);
 
       this.alwaysGrow = false;
 
@@ -69,7 +82,7 @@
     };
 
     redrawCell(i, j) {
-      const td = this.table.children[i].children[j];
+      const td = this.grid.children[i].children[j];
       td.classList.remove(CellType.snake, CellType.food, CellType.wall, CellType.empty, "cell-snake-eye");
       td.classList.add(this.cells[i][j]);
     }
@@ -82,7 +95,7 @@
 
     advanceSnake() {
       const head = this.snake.head();
-      const newHead = [head[0] + this.snake.direction[0], head[1] + this.snake.direction[1]];
+      const newHead: [number, number] = [head[0] + this.snake.direction[0], head[1] + this.snake.direction[1]];
       if (newHead[0] === -1)
         newHead[0] = this.n_rows - 1;
       if (newHead[0] === this.n_rows)
@@ -118,26 +131,26 @@
     }
 
     start() {
-      this.advanceSnakeInterval = window.setInterval(() => {this.advanceSnake()}, SNAKE_MOVE_INTERVAL);
-      this.spawnFoodInterval = window.setInterval(() => {this.spawnFood()}, FOOD_SPAWN_INTERVAL);
+      this.advanceSnakeInterval = window.setInterval(() => {
+        this.advanceSnake()
+      }, SNAKE_MOVE_INTERVAL);
+      this.spawnFoodInterval = window.setInterval(() => {
+        this.spawnFood()
+      }, FOOD_SPAWN_INTERVAL);
 
       window.addEventListener("keydown", (e) => {
         if (e.key === "Shift") {
           this.alwaysGrow = true;
-        }
-        else if (e.key === "ArrowUp") {
+        } else if (e.key === "ArrowUp") {
           if (this.snake.direction !== Direction.down)
             this.snake.direction = Direction.up;
-        }
-        else if (e.key === "ArrowDown") {
+        } else if (e.key === "ArrowDown") {
           if (this.snake.direction !== Direction.up)
             this.snake.direction = Direction.down;
-        }
-        else if (e.key === "ArrowLeft") {
+        } else if (e.key === "ArrowLeft") {
           if (this.snake.direction !== Direction.right)
             this.snake.direction = Direction.left;
-        }
-        else if (e.key === "ArrowRight") {
+        } else if (e.key === "ArrowRight") {
           if (this.snake.direction !== Direction.left)
             this.snake.direction = Direction.right;
         }
@@ -161,9 +174,14 @@
   }
 
 
-  const snakeGame = new SnakeGame(document.getElementById("game"), 30, 80);
+  const snakeGame = new SnakeGame(
+    <HTMLDivElement>document.getElementById("game"),
+    Math.floor(window.innerHeight / 20 * 0.8),
+    Math.floor(window.innerWidth / 20 * 0.8)
+  );
 
   snakeGame.start();
 
+  // @ts-ignore
   window.snakeGame = snakeGame;  // expose to the console
 })();

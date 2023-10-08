@@ -1,26 +1,31 @@
-td.cell {
-    margin: 1px;
-    padding: 0px;
-    height: 20px;
-    width: 20px;
+div.row {
+    display: flex;
 }
 
-td.cell-snake {
+div.cell {
+    margin: 1px;
+    padding: 0px;
+    height: 18px;
+    width: 18px;
+    min-width: 18px;
+}
+
+div.cell-snake {
     background-color: #ff0000;
 }
 
-td.cell-snakeeye {
+div.cell-snakeeye {
     background-color: pink;
 }
 
-td.cell-food {
+div.cell-food {
     background-color: #008000;
 }
 
-td.cell-wall {
+div.cell-wall {
     background-color: black;
 }
 
-td.cell-empty {
+div.cell-empty {
     background-color: gray;
 }
