@@ -1,0 +1,26 @@
+td.cell {
+    margin: 1px;
+    padding: 0px;
+    height: 20px;
+    width: 20px;
+}
+
+td.cell-snake {
+    background-color: #ff0000;
+}
+
+td.cell-snakeeye {
+    background-color: pink;
+}
+
+td.cell-food {
+    background-color: #008000;
+}
+
+td.cell-wall {
+    background-color: black;
+}
+
+td.cell-empty {
+    background-color: gray;
+}
